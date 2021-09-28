@@ -1,4 +1,7 @@
-﻿half3 CustomLightingPhysicallyBased(BRDFData brdfData, BRDFData brdfDataClearCoat,
+﻿//Functions copied from: Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl
+//  aka: Packages/Universal RP/ShaderLibrary/Lighting.hlsl
+
+half3 CustomLightingPhysicallyBased(BRDFData brdfData, BRDFData brdfDataClearCoat,
                                     half3 lightColor, half3 lightDirectionWS, half lightAttenuation,
                                     half3 normalWS, half3 viewDirectionWS,
                                     half clearCoatMask, bool specularHighlightsOff)

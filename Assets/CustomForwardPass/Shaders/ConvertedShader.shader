@@ -1,4 +1,4 @@
-Shader "CustomLighting"
+Shader "Custom Lighting Shader"
 {
     Properties
     {
@@ -6,6 +6,7 @@ Shader "CustomLighting"
         VoronoiAngleOffset("VoronoiAngleOffset", Float) = 2
         VoronoiCellDensity("VoronoiCellDensity", Float) = 5
         _ShadowStep("ShadowStep", Range(0, 1)) = 0.5
+        _Emission("Emission", Color) = (0, 0, 0, 0)
         [HideInInspector][NoScaleOffset]unity_Lightmaps("unity_Lightmaps", 2DArray) = "" {}
         [HideInInspector][NoScaleOffset]unity_LightmapsInd("unity_LightmapsInd", 2DArray) = "" {}
         [HideInInspector][NoScaleOffset]unity_ShadowMasks("unity_ShadowMasks", 2DArray) = "" {}
@@ -241,6 +242,7 @@ Shader "CustomLighting"
         float VoronoiAngleOffset;
         float VoronoiCellDensity;
         float _ShadowStep;
+        float4 _Emission;
         CBUFFER_END
 
         // Object and Global properties
@@ -329,9 +331,10 @@ Shader "CustomLighting"
             Unity_Voronoi_float(_Vector2_2523bd1c80bb486da65d81762054629c_Out_0, _Property_333bba8a2252412ea0aebba672c7c580_Out_0, _Property_e468fe3d7f5640d6996ebe8ba2da2078_Out_0, _Voronoi_909e3020d91846aa900d8ca0dc8a657b_Out_3, _Voronoi_909e3020d91846aa900d8ca0dc8a657b_Cells_4);
             float4 _Multiply_b03b913ec84f4f92947d556293068267_Out_2;
             Unity_Multiply_float(_Property_32f4847d566c4bd2a07d28d91897e88f_Out_0, (_Voronoi_909e3020d91846aa900d8ca0dc8a657b_Out_3.xxxx), _Multiply_b03b913ec84f4f92947d556293068267_Out_2);
+            float4 _Property_886926f61edb4d978a122a76d39cffaa_Out_0 = _Emission;
             surface.BaseColor = (_Multiply_b03b913ec84f4f92947d556293068267_Out_2.xyz);
             surface.NormalTS = IN.TangentSpaceNormal;
-            surface.Emission = float3(0, 0, 0);
+            surface.Emission = (_Property_886926f61edb4d978a122a76d39cffaa_Out_0.xyz);
             surface.Metallic = 0;
             surface.Smoothness = 0.5;
             surface.Occlusion = 1;
@@ -601,6 +604,7 @@ Shader "CustomLighting"
         float VoronoiAngleOffset;
         float VoronoiCellDensity;
         float _ShadowStep;
+        float4 _Emission;
         CBUFFER_END
 
         // Object and Global properties
@@ -689,9 +693,10 @@ Shader "CustomLighting"
             Unity_Voronoi_float(_Vector2_2523bd1c80bb486da65d81762054629c_Out_0, _Property_333bba8a2252412ea0aebba672c7c580_Out_0, _Property_e468fe3d7f5640d6996ebe8ba2da2078_Out_0, _Voronoi_909e3020d91846aa900d8ca0dc8a657b_Out_3, _Voronoi_909e3020d91846aa900d8ca0dc8a657b_Cells_4);
             float4 _Multiply_b03b913ec84f4f92947d556293068267_Out_2;
             Unity_Multiply_float(_Property_32f4847d566c4bd2a07d28d91897e88f_Out_0, (_Voronoi_909e3020d91846aa900d8ca0dc8a657b_Out_3.xxxx), _Multiply_b03b913ec84f4f92947d556293068267_Out_2);
+            float4 _Property_886926f61edb4d978a122a76d39cffaa_Out_0 = _Emission;
             surface.BaseColor = (_Multiply_b03b913ec84f4f92947d556293068267_Out_2.xyz);
             surface.NormalTS = IN.TangentSpaceNormal;
-            surface.Emission = float3(0, 0, 0);
+            surface.Emission = (_Property_886926f61edb4d978a122a76d39cffaa_Out_0.xyz);
             surface.Metallic = 0;
             surface.Smoothness = 0.5;
             surface.Occlusion = 1;
@@ -899,6 +904,7 @@ Shader "CustomLighting"
         float VoronoiAngleOffset;
         float VoronoiCellDensity;
         float _ShadowStep;
+        float4 _Emission;
         CBUFFER_END
 
         // Object and Global properties
@@ -1132,6 +1138,7 @@ Shader "CustomLighting"
         float VoronoiAngleOffset;
         float VoronoiCellDensity;
         float _ShadowStep;
+        float4 _Emission;
         CBUFFER_END
 
         // Object and Global properties
@@ -1377,6 +1384,7 @@ Shader "CustomLighting"
         float VoronoiAngleOffset;
         float VoronoiCellDensity;
         float _ShadowStep;
+        float4 _Emission;
         CBUFFER_END
 
         // Object and Global properties
@@ -1618,6 +1626,7 @@ Shader "CustomLighting"
         float VoronoiAngleOffset;
         float VoronoiCellDensity;
         float _ShadowStep;
+        float4 _Emission;
         CBUFFER_END
 
         // Object and Global properties
@@ -1702,8 +1711,9 @@ Shader "CustomLighting"
             Unity_Voronoi_float(_Vector2_2523bd1c80bb486da65d81762054629c_Out_0, _Property_333bba8a2252412ea0aebba672c7c580_Out_0, _Property_e468fe3d7f5640d6996ebe8ba2da2078_Out_0, _Voronoi_909e3020d91846aa900d8ca0dc8a657b_Out_3, _Voronoi_909e3020d91846aa900d8ca0dc8a657b_Cells_4);
             float4 _Multiply_b03b913ec84f4f92947d556293068267_Out_2;
             Unity_Multiply_float(_Property_32f4847d566c4bd2a07d28d91897e88f_Out_0, (_Voronoi_909e3020d91846aa900d8ca0dc8a657b_Out_3.xxxx), _Multiply_b03b913ec84f4f92947d556293068267_Out_2);
+            float4 _Property_886926f61edb4d978a122a76d39cffaa_Out_0 = _Emission;
             surface.BaseColor = (_Multiply_b03b913ec84f4f92947d556293068267_Out_2.xyz);
-            surface.Emission = float3(0, 0, 0);
+            surface.Emission = (_Property_886926f61edb4d978a122a76d39cffaa_Out_0.xyz);
             return surface;
         }
 
@@ -1909,6 +1919,7 @@ Shader "CustomLighting"
         float VoronoiAngleOffset;
         float VoronoiCellDensity;
         float _ShadowStep;
+        float4 _Emission;
         CBUFFER_END
 
         // Object and Global properties
@@ -2270,6 +2281,7 @@ Shader "CustomLighting"
         float VoronoiAngleOffset;
         float VoronoiCellDensity;
         float _ShadowStep;
+        float4 _Emission;
         CBUFFER_END
 
         // Object and Global properties
@@ -2358,9 +2370,10 @@ Shader "CustomLighting"
             Unity_Voronoi_float(_Vector2_2523bd1c80bb486da65d81762054629c_Out_0, _Property_333bba8a2252412ea0aebba672c7c580_Out_0, _Property_e468fe3d7f5640d6996ebe8ba2da2078_Out_0, _Voronoi_909e3020d91846aa900d8ca0dc8a657b_Out_3, _Voronoi_909e3020d91846aa900d8ca0dc8a657b_Cells_4);
             float4 _Multiply_b03b913ec84f4f92947d556293068267_Out_2;
             Unity_Multiply_float(_Property_32f4847d566c4bd2a07d28d91897e88f_Out_0, (_Voronoi_909e3020d91846aa900d8ca0dc8a657b_Out_3.xxxx), _Multiply_b03b913ec84f4f92947d556293068267_Out_2);
+            float4 _Property_886926f61edb4d978a122a76d39cffaa_Out_0 = _Emission;
             surface.BaseColor = (_Multiply_b03b913ec84f4f92947d556293068267_Out_2.xyz);
             surface.NormalTS = IN.TangentSpaceNormal;
-            surface.Emission = float3(0, 0, 0);
+            surface.Emission = (_Property_886926f61edb4d978a122a76d39cffaa_Out_0.xyz);
             surface.Metallic = 0;
             surface.Smoothness = 0.5;
             surface.Occlusion = 1;
@@ -2566,6 +2579,7 @@ Shader "CustomLighting"
         float VoronoiAngleOffset;
         float VoronoiCellDensity;
         float _ShadowStep;
+        float4 _Emission;
         CBUFFER_END
 
         // Object and Global properties
@@ -2798,6 +2812,7 @@ Shader "CustomLighting"
         float VoronoiAngleOffset;
         float VoronoiCellDensity;
         float _ShadowStep;
+        float4 _Emission;
         CBUFFER_END
 
         // Object and Global properties
@@ -3042,6 +3057,7 @@ Shader "CustomLighting"
         float VoronoiAngleOffset;
         float VoronoiCellDensity;
         float _ShadowStep;
+        float4 _Emission;
         CBUFFER_END
 
         // Object and Global properties
@@ -3283,6 +3299,7 @@ Shader "CustomLighting"
         float VoronoiAngleOffset;
         float VoronoiCellDensity;
         float _ShadowStep;
+        float4 _Emission;
         CBUFFER_END
 
         // Object and Global properties
@@ -3367,8 +3384,9 @@ Shader "CustomLighting"
             Unity_Voronoi_float(_Vector2_2523bd1c80bb486da65d81762054629c_Out_0, _Property_333bba8a2252412ea0aebba672c7c580_Out_0, _Property_e468fe3d7f5640d6996ebe8ba2da2078_Out_0, _Voronoi_909e3020d91846aa900d8ca0dc8a657b_Out_3, _Voronoi_909e3020d91846aa900d8ca0dc8a657b_Cells_4);
             float4 _Multiply_b03b913ec84f4f92947d556293068267_Out_2;
             Unity_Multiply_float(_Property_32f4847d566c4bd2a07d28d91897e88f_Out_0, (_Voronoi_909e3020d91846aa900d8ca0dc8a657b_Out_3.xxxx), _Multiply_b03b913ec84f4f92947d556293068267_Out_2);
+            float4 _Property_886926f61edb4d978a122a76d39cffaa_Out_0 = _Emission;
             surface.BaseColor = (_Multiply_b03b913ec84f4f92947d556293068267_Out_2.xyz);
-            surface.Emission = float3(0, 0, 0);
+            surface.Emission = (_Property_886926f61edb4d978a122a76d39cffaa_Out_0.xyz);
             return surface;
         }
 
@@ -3575,6 +3593,7 @@ Shader "CustomLighting"
         float VoronoiAngleOffset;
         float VoronoiCellDensity;
         float _ShadowStep;
+        float4 _Emission;
         CBUFFER_END
 
         // Object and Global properties
