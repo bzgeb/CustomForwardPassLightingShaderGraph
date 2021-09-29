@@ -1,4 +1,4 @@
-Shader "Custom Lighting Shader"
+Shader "Converted/CustomLighting"
 {
     Properties
     {
@@ -336,7 +336,7 @@ Shader "Custom Lighting Shader"
             surface.NormalTS = IN.TangentSpaceNormal;
             surface.Emission = (_Property_886926f61edb4d978a122a76d39cffaa_Out_0.xyz);
             surface.Metallic = 0;
-            surface.Smoothness = 0.5;
+            surface.Smoothness = 0;
             surface.Occlusion = 1;
             return surface;
         }
@@ -698,7 +698,7 @@ Shader "Custom Lighting Shader"
             surface.NormalTS = IN.TangentSpaceNormal;
             surface.Emission = (_Property_886926f61edb4d978a122a76d39cffaa_Out_0.xyz);
             surface.Metallic = 0;
-            surface.Smoothness = 0.5;
+            surface.Smoothness = 0;
             surface.Occlusion = 1;
             return surface;
         }
@@ -2375,7 +2375,7 @@ Shader "Custom Lighting Shader"
             surface.NormalTS = IN.TangentSpaceNormal;
             surface.Emission = (_Property_886926f61edb4d978a122a76d39cffaa_Out_0.xyz);
             surface.Metallic = 0;
-            surface.Smoothness = 0.5;
+            surface.Smoothness = 0;
             surface.Occlusion = 1;
             return surface;
         }
