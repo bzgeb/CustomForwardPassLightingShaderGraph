@@ -18,7 +18,16 @@ public class ShaderGraphConversionTool : Editor
         var shader = GUIUtility.systemCopyBuffer;
         var convertedShader = ConvertShader(shader);
         GUIUtility.systemCopyBuffer = convertedShader;
-        WriteShaderToFile(convertedShader, "ConvertedShader");
+
+        var filePath = EditorUtility.SaveFilePanelInProject("Converted Shader", "ConvertedShader", "shader",
+            "Where should we save the converted shader?");
+
+        if (!string.IsNullOrEmpty(filePath))
+        {
+            File.WriteAllText(filePath, shader);
+            AssetDatabase.ImportAsset(filePath);
+            AssetDatabase.Refresh();
+        }
     }
 
     [MenuItem("Tools/Convert Shader Graph Asset")]
@@ -30,57 +39,13 @@ public class ShaderGraphConversionTool : Editor
         var assetGUIDs = Selection.assetGUIDs;
         foreach (var assetGUID in assetGUIDs)
         {
-            var path = AssetDatabase.GUIDToAssetPath(assetGUID);
-            var assetImporter = AssetImporter.GetAtPath(path);
-            if (assetImporter.GetType().FullName != "UnityEditor.ShaderGraph.ShaderGraphImporter")
-            {
-                Debug.Log("Not a shader graph importer");
-                continue;
-            }
-
-            var shaderGraphName = Path.GetFileNameWithoutExtension(path);
-
-            var shaderGraphImporterAssembly = AppDomain.CurrentDomain.GetAssemblies().First(assembly =>
-            {
-                return assembly.GetType("UnityEditor.ShaderGraph.ShaderGraphImporterEditor") != null;
-            });
-            var shaderGraphImporterEditorType =
-                shaderGraphImporterAssembly.GetType("UnityEditor.ShaderGraph.ShaderGraphImporterEditor");
-
-            var getGraphDataMethod = shaderGraphImporterEditorType
-                .GetMethods(BindingFlags.Static | BindingFlags.NonPublic)
-                .First(info => { return info.Name.Contains("GetGraphData"); });
-
-            var graphData = getGraphDataMethod.Invoke(null, new object[] {assetImporter});
-            var generatorType = shaderGraphImporterAssembly.GetType("UnityEditor.ShaderGraph.Generator");
-            var generatorConstructor = generatorType.GetConstructors().First();
-            var generator = generatorConstructor.Invoke(new object[]
-                {graphData, null, 1, $"Converted/{shaderGraphName}", null});
-
-            var generatedShaderMethod = generator.GetType().GetMethod("get_generatedShader",
-                BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-            var generatedShader = generatedShaderMethod.Invoke(generator, new object[] { });
-            //GUIUtility.systemCopyBuffer = (string) generatedShader;
-            WriteShaderToFile(ConvertShader((string) generatedShader), path, shaderGraphName);
-            break;
+            ConvertShaderGraphWithGuid(new GUID(assetGUID));
         }
     }
 
     static string ConvertShader(string shader)
     {
         return shader.Replace(PBRForwardPassInclude, CustomInclude);
-    }
-
-    static void WriteShaderToFile(string shader, string defaultFileName)
-    {
-        var filePath = EditorUtility.SaveFilePanelInProject("Converted Shader", defaultFileName, "shader",
-            "Where should we save the converted shader?");
-
-        if (!string.IsNullOrEmpty(filePath))
-        {
-            File.WriteAllText(filePath, shader);
-            AssetDatabase.Refresh();
-        }
     }
 
     static void WriteShaderToFile(string shader, string shaderGraphPath, string defaultFileName)
@@ -102,6 +67,7 @@ public class ShaderGraphConversionTool : Editor
         if (!string.IsNullOrEmpty(filePath))
         {
             File.WriteAllText(filePath, shader);
+            AssetDatabase.ImportAsset(filePath);
             AssetDatabase.Refresh();
 
             if (isNew)
@@ -111,14 +77,14 @@ public class ShaderGraphConversionTool : Editor
         }
     }
 
-    public static void ConvertShaderGraphWithGuid(GUID guid)
+    public static bool ConvertShaderGraphWithGuid(GUID guid)
     {
         var path = AssetDatabase.GUIDToAssetPath(guid);
         var assetImporter = AssetImporter.GetAtPath(path);
         if (assetImporter.GetType().FullName != "UnityEditor.ShaderGraph.ShaderGraphImporter")
         {
             Debug.Log("Not a shader graph importer");
-            return;
+            return false;
         }
 
         var shaderGraphName = Path.GetFileNameWithoutExtension(path);
@@ -143,7 +109,8 @@ public class ShaderGraphConversionTool : Editor
         var generatedShaderMethod = generator.GetType().GetMethod("get_generatedShader",
             BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
         var generatedShader = generatedShaderMethod.Invoke(generator, new object[] { });
-        //GUIUtility.systemCopyBuffer = (string) generatedShader;
         WriteShaderToFile(ConvertShader((string) generatedShader), path, shaderGraphName);
+
+        return true;
     }
 }
