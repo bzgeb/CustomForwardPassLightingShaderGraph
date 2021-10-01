@@ -1,7 +1,7 @@
-﻿//Functions copied from: Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl
+﻿//Lighting Functions copied from: Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl
 //  aka: Packages/Universal RP/ShaderLibrary/Lighting.hlsl
 
-half3 CustomLightingPhysicallyBased(BRDFData brdfData, BRDFData brdfDataClearCoat,
+half3 LightingCustom(BRDFData brdfData, BRDFData brdfDataClearCoat,
                                     half3 lightColor, half3 lightDirectionWS, half lightAttenuation,
                                     half3 normalWS, half3 viewDirectionWS,
                                     half clearCoatMask, bool specularHighlightsOff)
@@ -36,15 +36,15 @@ half3 CustomLightingPhysicallyBased(BRDFData brdfData, BRDFData brdfDataClearCoa
     return brdf * radiance;
 }
 
-half3 CustomLightingPhysicallyBased(BRDFData brdfData, BRDFData brdfDataClearCoat, Light light, half3 normalWS,
+half3 LightingCustom(BRDFData brdfData, BRDFData brdfDataClearCoat, Light light, half3 normalWS,
                                     half3 viewDirectionWS, half clearCoatMask, bool specularHighlightsOff)
 {
-    return CustomLightingPhysicallyBased(brdfData, brdfDataClearCoat, light.color, light.direction,
+    return LightingCustom(brdfData, brdfDataClearCoat, light.color, light.direction,
                                          light.distanceAttenuation * light.shadowAttenuation, normalWS, viewDirectionWS,
                                          clearCoatMask, specularHighlightsOff);
 }
 
-half4 CustomUniversalFragmentPBR(InputData inputData, SurfaceData surfaceData)
+half4 UniversalFragmentCustom(InputData inputData, SurfaceData surfaceData)
 {
     #ifdef _SPECULARHIGHLIGHTS_OFF
     bool specularHighlightsOff = true;
@@ -85,7 +85,7 @@ half4 CustomUniversalFragmentPBR(InputData inputData, SurfaceData surfaceData)
     half3 color = GlobalIllumination(brdfData, brdfDataClearCoat, surfaceData.clearCoatMask,
                                      inputData.bakedGI, surfaceData.occlusion,
                                      inputData.normalWS, inputData.viewDirectionWS);
-    color += CustomLightingPhysicallyBased(brdfData, brdfDataClearCoat,
+    color += LightingCustom(brdfData, brdfDataClearCoat,
                                            mainLight,
                                            inputData.normalWS, inputData.viewDirectionWS,
                                            surfaceData.clearCoatMask, specularHighlightsOff);
@@ -98,7 +98,7 @@ half4 CustomUniversalFragmentPBR(InputData inputData, SurfaceData surfaceData)
     #if defined(_SCREEN_SPACE_OCCLUSION)
             light.color *= aoFactor.directAmbientOcclusion;
     #endif
-        color += CustomLightingPhysicallyBased(brdfData, brdfDataClearCoat,
+        color += LightingCustom(brdfData, brdfDataClearCoat,
                                          light,
                                          inputData.normalWS, inputData.viewDirectionWS,
                                          surfaceData.clearCoatMask, specularHighlightsOff);
@@ -205,7 +205,7 @@ half4 frag(PackedVaryings packedInput) : SV_TARGET
         surface.clearCoatSmoothness = saturate(surfaceDescription.CoatSmoothness);
     #endif
 
-    half4 color = CustomUniversalFragmentPBR(inputData, surface);
+    half4 color = UniversalFragmentCustom(inputData, surface);
 
     color.rgb = MixFog(color.rgb, inputData.fogCoord);
     return color;
