@@ -8,7 +8,7 @@ public class ShaderGraphModificationProcessor : AssetPostprocessor
     {
         foreach (var importedAsset in importedAssets)
         {
-            if (Path.GetExtension(importedAsset) == ".shadergraph")
+            if (Path.GetExtension(importedAsset).ToLower() == ".shadergraph")
             {
                 var guid = new GUID(AssetDatabase.AssetPathToGUID(importedAsset));
                 ShaderGraphConversionTool.ConvertShaderGraphWithGuid(guid);

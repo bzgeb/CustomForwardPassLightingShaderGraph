@@ -1,53 +1,83 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
 [FilePath("Assets/CustomForwardPass/Editor/ShaderGraphConversionSettings.asset",
     FilePathAttribute.Location.ProjectFolder)]
-public class ShaderGraphConversionToolSettings : ScriptableSingleton<ShaderGraphConversionToolSettings>
+public class ShaderGraphConversionToolSettings : ScriptableSingleton<ShaderGraphConversionToolSettings>,
+    ISerializationCallbackReceiver
 {
-    [Serializable]
-    public class FilePair
-    {
-        [SerializeField] public string ShaderGraphGuid;
-        [SerializeField] public string ConvertedShaderGuid;
-    }
+    readonly Dictionary<GUID, GUID> _shaderPairs = new Dictionary<GUID, GUID>();
 
-    public List<FilePair> ShaderPairs = new List<FilePair>();
+    #region Serialization
+
+    [SerializeField, HideInInspector] List<string> _shaderGraphGuids;
+    [SerializeField, HideInInspector] List<string> _convertedGraphGuids;
+
+    #endregion
+
 
     public void AddFilePair(string shaderGraphPath, string convertedShaderPath)
     {
-        var filePair = new FilePair
+        var shaderGraphGuid = new GUID(AssetDatabase.AssetPathToGUID(shaderGraphPath));
+        var convertedPathGuid = new GUID(AssetDatabase.AssetPathToGUID(convertedShaderPath));
+
+        if (_shaderPairs.ContainsKey(shaderGraphGuid))
         {
-            ShaderGraphGuid = AssetDatabase.AssetPathToGUID(shaderGraphPath),
-            ConvertedShaderGuid = AssetDatabase.AssetPathToGUID(convertedShaderPath)
-        };
-        ShaderPairs.Add(filePair);
+            _shaderPairs[shaderGraphGuid] = convertedPathGuid;
+        }
+        else
+        {
+            _shaderPairs.Add(shaderGraphGuid, convertedPathGuid);
+        }
 
         Save(true);
     }
 
     public string GetConvertedShaderPath(string shaderGraphPath)
     {
-        var guid = AssetDatabase.AssetPathToGUID(shaderGraphPath);
-        foreach (var filePair in ShaderPairs)
+        var shaderGraphGuid = new GUID(AssetDatabase.AssetPathToGUID(shaderGraphPath));
+        if (_shaderPairs.TryGetValue(shaderGraphGuid, out GUID convertedShaderGuid))
         {
-            if (filePair.ShaderGraphGuid == guid)
-            {
-                return AssetDatabase.GUIDToAssetPath(filePair.ConvertedShaderGuid);
-            }
+            return AssetDatabase.GUIDToAssetPath(convertedShaderGuid);
         }
 
         return null;
     }
 
-    void OnDestroy()
+    public void OnBeforeSerialize()
     {
-        ShaderPairs.RemoveAll(pair =>
-            string.IsNullOrEmpty(AssetDatabase.GUIDToAssetPath(pair.ShaderGraphGuid)) ||
-            string.IsNullOrEmpty(AssetDatabase.GUIDToAssetPath(pair.ConvertedShaderGuid)));
+        _shaderGraphGuids = new List<string>();
+        _convertedGraphGuids = new List<string>();
 
-        Save(true);
+        foreach (var shaderPair in _shaderPairs)
+        {
+            _shaderGraphGuids.Add(shaderPair.Key.ToString());
+            _convertedGraphGuids.Add(shaderPair.Value.ToString());
+        }
+    }
+
+    public void OnAfterDeserialize()
+    {
+        if (_shaderGraphGuids != null)
+        {
+            for (int i = 0; i < _shaderGraphGuids.Count; ++i)
+            {
+                var _shaderGraphGuid = new GUID(_shaderGraphGuids[i]);
+                var _convertedGraphGuid = new GUID(_convertedGraphGuids[i]);
+
+                if (_shaderPairs.ContainsKey(_shaderGraphGuid))
+                {
+                    _shaderPairs[_shaderGraphGuid] = _convertedGraphGuid;
+                }
+                else
+                {
+                    _shaderPairs.Add(_shaderGraphGuid, _convertedGraphGuid);
+                }
+            }
+        }
+
+        _shaderGraphGuids = null;
+        _convertedGraphGuids = null;
     }
 }
