@@ -11,7 +11,7 @@ public class ShaderGraphConversionTool : Editor
         "#include \"Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/PBRForwardPass.hlsl\"";
 
     const string CustomInclude = "#include \"CustomForwardPass.hlsl\"";
-    
+
     [MenuItem("Tools/Convert Shader in CopyPaste Buffer")]
     static void ConvertShaderInBuffer()
     {
@@ -56,8 +56,6 @@ public class ShaderGraphConversionTool : Editor
             filePath = ShaderGraphConversionToolSettings.instance.GetConvertedShaderPath(shaderGraphPath);
         }
 
-        bool isNew = string.IsNullOrEmpty(filePath);
-
         if (string.IsNullOrEmpty(filePath) || !File.Exists(filePath))
         {
             filePath = EditorUtility.SaveFilePanelInProject("Converted Shader", defaultFileName, "shader",
@@ -70,10 +68,7 @@ public class ShaderGraphConversionTool : Editor
             AssetDatabase.ImportAsset(filePath);
             AssetDatabase.Refresh();
 
-            if (isNew)
-            {
-                ShaderGraphConversionToolSettings.instance.AddFilePair(shaderGraphPath, filePath);
-            }
+            ShaderGraphConversionToolSettings.instance.AddFilePair(shaderGraphPath, filePath);
         }
     }
 
@@ -93,7 +88,8 @@ public class ShaderGraphConversionTool : Editor
         {
             return assembly.GetType("UnityEditor.ShaderGraph.ShaderGraphImporterEditor") != null;
         });
-        var shaderGraphImporterEditorType = shaderGraphImporterAssembly.GetType("UnityEditor.ShaderGraph.ShaderGraphImporterEditor");
+        var shaderGraphImporterEditorType =
+            shaderGraphImporterAssembly.GetType("UnityEditor.ShaderGraph.ShaderGraphImporterEditor");
 
         var getGraphDataMethod = shaderGraphImporterEditorType
             .GetMethods(BindingFlags.Static | BindingFlags.NonPublic)
